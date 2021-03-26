@@ -1,7 +1,8 @@
 # -- coding: utf-8 --
-#pip install web3
 
+from eth_typing.ethpm import ContractName
 from web3 import Web3
+import sys 
 url = 'http://127.0.0.1:7545'
 
 abi_contract= [
@@ -48,26 +49,28 @@ bytecode_contract= "608060405234801561001057600080fd5b50604051610785380380610785
 
 account_a = "0x39a19E317e85BF3E2dA6b42D2c1B204df7269929"
 key_a = "127229dcd939df4de1fa2cefdf2b9fbe46ded5f1b4fedcf916757af8df2d0ea8"
+constract_addres= "0xCA8A40B21912f1E55De5D1c958e86b17B125Ae2f"
+
+message=sys.argv[1]
+print (message)
 
 web3 = Web3(Web3.HTTPProvider(url))
 
-#Creo función para desplegar el contrato
-def set_contract():
-    deploy_contract = web3.eth.contract(abi=abi_contract, bytecode= bytecode_contract)
+def write():
+    web3.eth.defaultAccount = account_a
+    address = web3.toChecksumAddress(constract_addres)
+    contract = web3.eth.contract(address=address, abi= abi_contract)
     nonce = web3.eth.getTransactionCount(account_a)
     parameter={
         'nonce': nonce,
-        'from': account_a,
         'gas': 500000,
-        'gasPrice' : web3.toWei('21','gwei'),
+        'gasPrice': web3.toWei('21','gwei')
     }
 
+    tx_hash = contract.functions.setMessage(message).buildTransaction(parameter)
     key=web3.eth.account.privateKeyToAccount(key_a)
-    construct_txn = deploy_contract.constructor("Hola").buildTransaction(parameter)
-    signed=key.sign_transaction(construct_txn)
+    signed=key.sign_transaction(tx_hash)
     transaction = web3.eth.sendRawTransaction(signed.rawTransaction)
     print(transaction.hex())
 
-set_contract()    
-
-
+write()
