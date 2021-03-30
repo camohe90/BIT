@@ -55,11 +55,10 @@ web3 = Web3(Web3.HTTPProvider(url))
 
 def read():
     
-
     address = web3.toChecksumAddress(constract_addres)
     contract = web3.eth.contract(address=address, abi= abi_contract)
     data = contract.functions.message().call()
    
     print(data)
-
+#read
 read()
